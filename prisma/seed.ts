@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
+import { hash } from 'bcrypt-ts'
 import { addDays, format } from 'date-fns'
 
 const prisma = new PrismaClient()
@@ -34,7 +34,7 @@ async function generateTripsForDate(dateStr: string, driverId?: string) {
 async function main() {
   console.log('🌱 Seeding ComfoRide database...')
 
-  const adminPassword = await bcrypt.hash('admin123', 10)
+  const adminPassword = await hash('admin123', 10)
   const admin = await prisma.user.upsert({
     where: { email: 'admin@comforide.com' },
     update: {},
@@ -48,7 +48,7 @@ async function main() {
   })
   console.log('✅ Admin created:', admin.email)
 
-  const driverPassword = await bcrypt.hash('driver123', 10)
+  const driverPassword = await hash('driver123', 10)
   const driverUser = await prisma.user.upsert({
     where: { email: 'driver@comforide.com' },
     update: {},
@@ -68,7 +68,7 @@ async function main() {
   })
   console.log('✅ Driver created:', driverUser.email)
 
-  const passengerPassword = await bcrypt.hash('passenger123', 10)
+  const passengerPassword = await hash('passenger123', 10)
   await prisma.user.upsert({
     where: { email: 'passenger@example.com' },
     update: {},
