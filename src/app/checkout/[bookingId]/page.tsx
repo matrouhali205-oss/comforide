@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 import CountdownTimer from '@/components/CountdownTimer'
 import { ArrowRight, CreditCard, Shield, AlertCircle, CheckCircle } from 'lucide-react'
 
@@ -37,7 +38,7 @@ export default function CheckoutPage() {
       <AlertCircle size={40} className="text-red-400 mx-auto mb-3" />
       <h2 className="text-xl font-bold mb-2">Hold Expired</h2>
       <p className="text-slate-400 mb-6">Your seat hold has expired. Please try booking again.</p>
-      <a href="/" className="btn-primary inline-block">Find Another Trip</a>
+      <Link href="/" className="btn-primary inline-block">Find Another Trip</Link>
     </div>
   )
 
