@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String
+  email          String    @unique
+  phone          String?
+  passwordHash   String
+  role           String    @default("PASSENGER")
+  createdAt      DateTime  @default(now())
+  bookings       Booking[]
+  driver         Driver?
+}
+
+model Driver {
+  id     String  @id @default(cuid())
+  userId String  @unique
+  user   User    @relation(fields: [userId], references: [id])
+  trips  Trip[]
+}
+
+model Trip {
+  id            String      @id @default(cuid())
+  route         String
+  date          String
+  departureTime String
+  capacity      Int         @default(5)
+  seatsBooked   Int         @default(0)
+  status        String      @default("SCHEDULED")
+  driverId      String?
+  driver        Driver?     @relation(fields: [driverId], references: [id])
+  bookings      Booking[]
+  createdAt     DateTime    @default(now())
+
+  @@unique([route, date, departureTime])
+}
+
+model Booking {
+  id                     String    @id @default(cuid())
+  userId                 String
+  user                   User      @relation(fields: [userId], references: [id])
+  tripId                 String
+  trip                   Trip      @relation(fields: [tripId], references: [id])
+  seats                  Int
+  status                 String    @default("HOLD")
+  paymentStatus          String    @default("PENDING")
+  holdExpiresAt          DateTime
+  stripePaymentIntentId  String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  payment                Payment?
+}
+
+model Payment {
+  id         String    @id @default(cuid())
+  bookingId  String    @unique
+  booking    Booking   @relation(fields: [bookingId], references: [id])
+  amount     Float
+  status     String    @default("PENDING")
+  stripeId   String?
+  createdAt  DateTime  @default(now())
+}
